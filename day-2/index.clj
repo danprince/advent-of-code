@@ -1,3 +1,5 @@
+;; http://adventofcode.com/2017/day/2
+
 (defn diff [xs]
   (- (apply max xs) (apply min xs)))
 
