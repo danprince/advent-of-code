@@ -1,3 +1,5 @@
+-- http://adventofcode.com/2017/day/1
+
 module Main where
 
 isTupleEqual :: (Int, Int) -> Bool
