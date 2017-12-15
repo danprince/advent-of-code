@@ -7,20 +7,22 @@
   (foldl connect (hash) connections))
 
 (define (connect connection graph)
-  (hash-set graph (car connection) (cdr connection)))
+  (hash-set graph (first connection) (rest connection)))
 
 (define (parse-connection str)
   (define parts (string-split str " <-> "))
-  (match-let ([(list node edge-string) parts])
-    (cons node (string-split edge-string ", "))))
+  (define node (first parts))
+  (define edge-string (second parts))
+  (define edges (string-split edge-string ", "))
+  (cons node edges))
 
-(define (find-group graph start [visited (set)])
+(define (find-group graph start [group (set)])
   (define edges (hash-ref graph start))
-  (define (visit-edge edge visited)
-    (if (set-member? visited edge)
-        visited
-        (find-group graph edge visited)))
-  (foldl visit-edge (set-add visited start) edges))
+  (define (visit-edge edge group)
+    (cond
+      [(set-member? group edge) group]
+      [else (find-group graph edge group)]))
+  (foldl visit-edge (set-add group start) edges))
 
 (define (solve graph)
   (define group (find-group graph "0"))
