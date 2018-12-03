@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+for D in */; do
+  (cd $D && go test)
+done
