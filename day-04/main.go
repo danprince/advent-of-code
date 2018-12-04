@@ -10,15 +10,10 @@ import (
 	"strings"
 )
 
-const (
-	Asleep = iota
-	Awake
-)
-
 type Log struct {
-	State  int
-	Guard  int
-	Minute int
+	Guard    int
+	Minute   int
+	Sleeping bool
 }
 
 func ParseLogs(input string) []Log {
@@ -39,16 +34,16 @@ func ParseLogs(input string) []Log {
 			continue
 		}
 
-		state := Awake
+		sleeping := false
 
 		if strings.Contains(line, "asleep") {
-			state = Asleep
+			sleeping = true
 		}
 
 		logs = append(logs, Log{
-			State:  state,
-			Guard:  guard,
-			Minute: minute,
+			Guard:    guard,
+			Minute:   minute,
+			Sleeping: sleeping,
 		})
 	}
 
@@ -68,11 +63,11 @@ func SleepAnalysis(input string) (Records, Markers) {
 	fellAsleep := 0
 
 	for _, log := range ParseLogs(input) {
-		if log.State == Asleep {
+		if log.Sleeping {
 			fellAsleep = log.Minute
 		}
 
-		if log.State == Awake {
+		if !log.Sleeping {
 			start := fellAsleep
 			end := log.Minute
 			records[log.Guard] += end - start
