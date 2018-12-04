@@ -29,17 +29,17 @@ func ParseClaims(input string) []Claim {
 	claims := []Claim{}
 
 	for _, line := range lines {
-		matches := r.FindSubmatch([]byte(line))
+		matches := r.FindStringSubmatch(line)
 
 		if matches == nil {
 			continue
 		}
 
-		id, _ := strconv.Atoi(string(matches[1]))
-		x, _ := strconv.Atoi(string(matches[2]))
-		y, _ := strconv.Atoi(string(matches[3]))
-		w, _ := strconv.Atoi(string(matches[4]))
-		h, _ := strconv.Atoi(string(matches[5]))
+		id, _ := strconv.Atoi(matches[1])
+		x, _ := strconv.Atoi(matches[2])
+		y, _ := strconv.Atoi(matches[3])
+		w, _ := strconv.Atoi(matches[4])
+		h, _ := strconv.Atoi(matches[5])
 
 		claims = append(claims, Claim{id, x, y, w, h})
 	}
