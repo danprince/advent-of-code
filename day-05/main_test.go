@@ -11,8 +11,7 @@ func TestSolvePartOne(t *testing.T) {
 		"dabAcCaCBAcCcaDA": len("dabCBAcaDA"),
 	}
 
-	for input, output := range examples {
-		expected := output
+	for input, expected := range examples {
 		actual := SolvePartOne(input)
 
 		if actual != expected {

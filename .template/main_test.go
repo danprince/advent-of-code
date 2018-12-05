@@ -2,22 +2,26 @@ package main
 
 import "testing"
 
-const example = ``
-
 func TestSolvePartOne(t *testing.T) {
-	expected := 0
-	actual := SolvePartOne(example)
+	examples := map[string]int{}
 
-	if actual != expected {
-		t.Errorf(`Part 1: Expected: %d Actual: %d`, expected, actual)
+	for input, expected := range examples {
+		actual := SolvePartOne(input)
+
+		if actual != expected {
+			t.Errorf(`Part 1: Expected: %#v Actual: %#v`, expected, actual)
+		}
 	}
 }
 
 func TestSolvePartTwo(t *testing.T) {
-	expected := 0
-	actual := SolvePartTwo(example)
+	examples := map[string]int{}
 
-	if actual != expected {
-		t.Errorf(`Part 2: Expected: "%d" Actual: "%d"`, expected, actual)
+	for input, expected := range examples {
+		actual := SolvePartTwo(input)
+
+		if actual != expected {
+			t.Errorf(`Part 2: Expected: %#v Actual: %#v`, expected, actual)
+		}
 	}
 }
