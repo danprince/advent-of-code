@@ -23,8 +23,8 @@ func DrawPartOne(input string, path string) {
 		})
 	}
 
-	for x := grid.X0; x < grid.X1; x++ {
-		for y := grid.Y0; y < grid.Y1; y++ {
+	for x := 0; x < grid.X1; x++ {
+		for y := 0; y < grid.Y1; y++ {
 			min := math.MaxInt64
 			shared := false
 			region := 0
@@ -62,8 +62,8 @@ func DrawPartTwo(input string, distance int, path string) {
 	grid := ParseGrid(input)
 	img := image.NewRGBA(image.Rect(0, 0, grid.X1-grid.X0, grid.Y1-grid.Y0))
 
-	for x := grid.X0; x < grid.X1; x++ {
-		for y := grid.Y0; y < grid.Y1; y++ {
+	for x := 0; x < grid.X1; x++ {
+		for y := 0; y < grid.Y1; y++ {
 			total := 0
 
 			for _, point := range grid.Points {
