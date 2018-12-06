@@ -85,6 +85,17 @@ func DrawPartTwo(input string, distance int, path string) {
 		}
 	}
 
+	red := color.RGBA{255, 0, 0, 255}
+
+	// Draw a marker at each point in the grid
+	for _, point := range grid.Points {
+		img.Set(point.X, point.Y, red)
+		img.Set(point.X-1, point.Y, red)
+		img.Set(point.X+1, point.Y, red)
+		img.Set(point.X, point.Y-1, red)
+		img.Set(point.X, point.Y+1, red)
+	}
+
 	file, err := os.Create(path)
 
 	if err != nil {
