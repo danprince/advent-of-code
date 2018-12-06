@@ -45,6 +45,15 @@ func DrawPartOne(input string, path string) {
 		}
 	}
 
+	// Draw a cross at each point in the grid
+	for _, point := range grid.Points {
+		img.Set(point.X, point.Y, color.White)
+		img.Set(point.X-1, point.Y, color.White)
+		img.Set(point.X+1, point.Y, color.White)
+		img.Set(point.X, point.Y-1, color.White)
+		img.Set(point.X, point.Y+1, color.White)
+	}
+
 	file, err := os.Create(path)
 
 	if err != nil {
