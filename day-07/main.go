@@ -11,19 +11,14 @@ import (
 type AdjacencyList map[string][]string
 type SortedStack []string
 
-func (stack SortedStack) push(item string) SortedStack {
-	i := sort.SearchStrings(stack, item)
-	before, after := stack[:i], stack[i:]
-	items := []string{item}
-	return append(before, append(items, after...)...)
+func (stack SortedStack) Push(item string) SortedStack {
+	stack = append(stack, item)
+	sort.Strings(stack)
+	return stack
 }
 
-func (stack SortedStack) pop() (string, SortedStack) {
+func (stack SortedStack) Pop() (string, SortedStack) {
 	return stack[0], stack[1:]
-}
-
-func (stack SortedStack) peek() string {
-	return stack[0]
 }
 
 func ParseGraph(input string) AdjacencyList {
@@ -64,21 +59,21 @@ func SolvePartOne(input string) string {
 
 	for node := range deps {
 		if deps[node] == 0 {
-			stack = stack.push(node)
+			stack = stack.Push(node)
 		}
 	}
 
 	var node, child string
 
 	for len(stack) > 0 {
-		node, stack = stack.pop()
+		node, stack = stack.Pop()
 		done = append(done, node)
 
 		for _, child = range graph[node] {
 			deps[child] -= 1
 
 			if deps[child] == 0 {
-				stack = stack.push(child)
+				stack = stack.Push(child)
 			}
 		}
 	}
@@ -97,7 +92,7 @@ func SolvePartTwo(input string, workers, delay int) int {
 
 	for node := range deps {
 		if deps[node] == 0 {
-			waiting = waiting.push(node)
+			waiting = waiting.Push(node)
 		}
 	}
 
@@ -114,7 +109,7 @@ func SolvePartTwo(input string, workers, delay int) int {
 					deps[child] -= 1
 
 					if deps[child] == 0 {
-						waiting = waiting.push(child)
+						waiting = waiting.Push(child)
 					}
 				}
 			}
@@ -142,7 +137,7 @@ func SolvePartTwo(input string, workers, delay int) int {
 			}
 
 			if !assigned {
-				blocked = blocked.push(node)
+				blocked = blocked.Push(node)
 			}
 		}
 
