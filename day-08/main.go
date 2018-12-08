@@ -9,30 +9,44 @@ import (
 )
 
 type Node struct {
-	Index    int
-	Width    int
 	Children []Node
 	Metadata []int
 }
 
-func (node Node) getValue() int {
+func (node Node) Sum() int {
 	total := 0
 
-	if len(node.Children) > 0 {
-		for _, value := range node.Metadata {
-			index := value - 1
+	for _, child := range node.Children {
+		total += child.Sum()
+	}
 
-			if index < len(node.Children) {
-				total += node.Children[index].getValue()
-			}
-		}
-	} else {
-		for _, value := range node.Metadata {
-			total += value
-		}
+	for _, meta := range node.Metadata {
+		total += meta
 	}
 
 	return total
+}
+
+func (node Node) Value() int {
+	value := 0
+	n := len(node.Children)
+
+	if n > 0 {
+		for _, meta := range node.Metadata {
+			i := meta - 1
+
+			if i < n {
+				child := node.Children[i]
+				value += child.Value()
+			}
+		}
+	} else {
+		for _, meta := range node.Metadata {
+			value += meta
+		}
+	}
+
+	return value
 }
 
 func ParseTree(input string) Node {
@@ -43,51 +57,32 @@ func ParseTree(input string) Node {
 		data = append(data, num)
 	}
 
-	return ParseNode(data, 0)
+	tree, _ := ParseNode(data)
+	return tree
 }
 
-func ParseNode(data []int, index int) Node {
-	node := Node{Index: index}
-	n, m := data[index], data[index+1]
+func ParseNode(data []int) (Node, []int) {
+	n, m, data := data[0], data[1], data[2:]
 
-	index += 2
-	node.Width += 2
+	var node, child Node
 
 	for i := 0; i < n; i++ {
-		child := ParseNode(data, index)
+		child, data = ParseNode(data)
 		node.Children = append(node.Children, child)
-		node.Width += child.Width
-		index += child.Width
 	}
 
-	node.Metadata = data[index : index+m]
-	node.Width += m
+	node.Metadata = data[:m]
+	data = data[m:]
 
-	return node
+	return node, data
 }
 
 func SolvePartOne(input string) int {
-	tree := ParseTree(input)
-	stack := []Node{tree}
-	sum := 0
-
-	for len(stack) > 0 {
-		node := stack[0]
-		stack = stack[1:]
-
-		for _, value := range node.Metadata {
-			sum += value
-		}
-
-		stack = append(stack, node.Children...)
-	}
-
-	return sum
+	return ParseTree(input).Sum()
 }
 
 func SolvePartTwo(input string) int {
-	tree := ParseTree(input)
-	return tree.getValue()
+	return ParseTree(input).Value()
 }
 
 func main() {
