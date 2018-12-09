@@ -40,17 +40,20 @@ func Play(players, turns int) int {
 	return highscore
 }
 
-func SolvePartOne(input string) int {
+func ParseRules(input string) (int, int) {
 	parts := strings.Split(input, " ")
 	players, _ := strconv.Atoi(parts[0])
 	limit, _ := strconv.Atoi(parts[6])
+	return players, limit
+}
+
+func SolvePartOne(input string) int {
+	players, limit := ParseRules(input)
 	return Play(players, limit)
 }
 
 func SolvePartTwo(input string) int {
-	parts := strings.Split(input, " ")
-	players, _ := strconv.Atoi(parts[0])
-	limit, _ := strconv.Atoi(parts[6])
+	players, limit := ParseRules(input)
 	return Play(players, limit*100)
 }
 
