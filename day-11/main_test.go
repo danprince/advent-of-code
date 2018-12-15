@@ -27,9 +27,9 @@ func TestPowerLevel(t *testing.T) {
 
 func TestSolvePartOne(t *testing.T) {
 	examples := map[string]string{
-		"18": "33,45",
-		//"42":   "21,61",
-		//"9810": "245,14",
+		"18":   "33,45",
+		"42":   "21,61",
+		"9810": "245,14",
 	}
 
 	for input, expected := range examples {
@@ -43,9 +43,9 @@ func TestSolvePartOne(t *testing.T) {
 
 func TestSolvePartTwo(t *testing.T) {
 	examples := map[string]string{
-		"18": "90,269,16",
-		//"42":   "232,251,12",
-		//"9810": "235,206,13",
+		"18":   "90,269,16",
+		"42":   "232,251,12",
+		"9810": "235,206,13",
 	}
 
 	for input, expected := range examples {
