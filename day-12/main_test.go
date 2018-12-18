@@ -20,7 +20,7 @@ const example = `initial state: #..#.#..##......###...###
 ####. => #`
 
 func TestSolvePartOne(t *testing.T) {
-	actual := SolvePartOne(example)
+	actual := solvePartOne(example)
 	expected := 325
 
 	if actual != expected {

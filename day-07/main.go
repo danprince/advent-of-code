@@ -8,21 +8,21 @@ import (
 	"strings"
 )
 
-type AdjacencyList map[string][]string
-type SortedStack []string
+type adjacencyList map[string][]string
+type sortedStack []string
 
-func (stack SortedStack) Push(item string) SortedStack {
+func (stack sortedStack) push(item string) sortedStack {
 	stack = append(stack, item)
 	sort.Strings(stack)
 	return stack
 }
 
-func (stack SortedStack) Pop() (string, SortedStack) {
+func (stack sortedStack) pop() (string, sortedStack) {
 	return stack[0], stack[1:]
 }
 
-func ParseGraph(input string) AdjacencyList {
-	graph := AdjacencyList{}
+func parse(input string) adjacencyList {
+	graph := adjacencyList{}
 
 	for _, line := range strings.Split(input, "\n") {
 		source, target := string(line[5]), string(line[36])
@@ -33,7 +33,7 @@ func ParseGraph(input string) AdjacencyList {
 	return graph
 }
 
-func SumDependencies(graph AdjacencyList) map[string]int {
+func sumDependencies(graph adjacencyList) map[string]int {
 	deps := map[string]int{}
 
 	for parent, children := range graph {
@@ -51,29 +51,29 @@ func getNodeTime(node string) int {
 	return int(node[0] - 64)
 }
 
-func SolvePartOne(input string) string {
-	graph := ParseGraph(input)
-	deps := SumDependencies(graph)
-	stack := SortedStack{}
+func solvePartOne(input string) string {
+	graph := parse(input)
+	deps := sumDependencies(graph)
+	stack := sortedStack{}
 	done := []string{}
 
 	for node := range deps {
 		if deps[node] == 0 {
-			stack = stack.Push(node)
+			stack = stack.push(node)
 		}
 	}
 
 	var node, child string
 
 	for len(stack) > 0 {
-		node, stack = stack.Pop()
+		node, stack = stack.pop()
 		done = append(done, node)
 
 		for _, child = range graph[node] {
 			deps[child] -= 1
 
 			if deps[child] == 0 {
-				stack = stack.Push(child)
+				stack = stack.push(child)
 			}
 		}
 	}
@@ -81,10 +81,10 @@ func SolvePartOne(input string) string {
 	return strings.Join(done, "")
 }
 
-func SolvePartTwo(input string, workers, delay int) int {
-	graph := ParseGraph(input)
-	deps := SumDependencies(graph)
-	waiting := SortedStack{}
+func solvePartTwo(input string, workers, delay int) int {
+	graph := parse(input)
+	deps := sumDependencies(graph)
+	waiting := sortedStack{}
 	tasks := map[int]string{}
 	timers := map[int]int{}
 	done := []string{}
@@ -92,7 +92,7 @@ func SolvePartTwo(input string, workers, delay int) int {
 
 	for node := range deps {
 		if deps[node] == 0 {
-			waiting = waiting.Push(node)
+			waiting = waiting.push(node)
 		}
 	}
 
@@ -109,7 +109,7 @@ func SolvePartTwo(input string, workers, delay int) int {
 					deps[child] -= 1
 
 					if deps[child] == 0 {
-						waiting = waiting.Push(child)
+						waiting = waiting.push(child)
 					}
 				}
 			}
@@ -121,7 +121,7 @@ func SolvePartTwo(input string, workers, delay int) int {
 			time += 1
 		}
 
-		blocked := SortedStack{}
+		blocked := sortedStack{}
 
 		// Assign waiting nodes to available workers
 		for _, node := range waiting {
@@ -137,7 +137,7 @@ func SolvePartTwo(input string, workers, delay int) int {
 			}
 
 			if !assigned {
-				blocked = blocked.Push(node)
+				blocked = blocked.push(node)
 			}
 		}
 
@@ -149,6 +149,6 @@ func SolvePartTwo(input string, workers, delay int) int {
 func main() {
 	bytes, _ := ioutil.ReadAll(os.Stdin)
 	input := strings.TrimSpace(string(bytes))
-	fmt.Println("Part 1:", SolvePartOne(input))
-	fmt.Println("Part 2:", SolvePartTwo(input, 5, 60))
+	fmt.Println("Part 1:", solvePartOne(input))
+	fmt.Println("Part 2:", solvePartTwo(input, 5, 60))
 }

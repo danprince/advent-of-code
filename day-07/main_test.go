@@ -11,7 +11,7 @@ Step D must be finished before step E can begin.
 Step F must be finished before step E can begin.`
 
 func TestSolvePartOne(t *testing.T) {
-	actual := SolvePartOne(example)
+	actual := solvePartOne(example)
 	expected := "CABDFE"
 
 	if actual != expected {
@@ -20,7 +20,7 @@ func TestSolvePartOne(t *testing.T) {
 }
 
 func TestSolvePartTwo(t *testing.T) {
-	actual := SolvePartTwo(example, 2, 0)
+	actual := solvePartTwo(example, 2, 0)
 	expected := 15
 
 	if actual != expected {

@@ -9,7 +9,7 @@ import (
 	"unicode"
 )
 
-func React(polymer []rune) []rune {
+func react(polymer []rune) []rune {
 	stack := []rune{}
 
 	for _, b := range polymer {
@@ -29,12 +29,12 @@ func React(polymer []rune) []rune {
 	return stack
 }
 
-func SolvePartOne(input string) int {
-	polymer := React([]rune(input))
+func solvePartOne(input string) int {
+	polymer := react([]rune(input))
 	return len(polymer)
 }
 
-func SolvePartTwo(input string) int {
+func solvePartTwo(input string) int {
 	polymer := []rune(input)
 	runes := map[rune]bool{}
 
@@ -47,7 +47,7 @@ func SolvePartTwo(input string) int {
 	for r := range runes {
 		regex := regexp.MustCompile("(?i)" + string(r))
 		str := regex.ReplaceAllString(input, "")
-		polymer := React([]rune(str))
+		polymer := react([]rune(str))
 
 		if len(polymer) < score {
 			score = len(polymer)
@@ -60,6 +60,6 @@ func SolvePartTwo(input string) int {
 func main() {
 	bytes, _ := ioutil.ReadAll(os.Stdin)
 	input := strings.TrimSpace(string(bytes))
-	fmt.Println("Part 1:", SolvePartOne(input))
-	fmt.Println("Part 2:", SolvePartTwo(input))
+	fmt.Println("Part 1:", solvePartOne(input))
+	fmt.Println("Part 2:", solvePartTwo(input))
 }

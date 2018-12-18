@@ -7,45 +7,45 @@ import (
 	"strings"
 )
 
-type Pattern [5]bool
-type Rules map[Pattern]bool
+type pattern [5]bool
+type rules map[pattern]bool
 
-type State struct {
-	Pots map[int]bool
+type state struct {
+	pots map[int]bool
 	min  int
 	max  int
 }
 
-func (state *State) Score() int {
+func (state *state) score() int {
 	score := 0
-	for index := range state.Pots {
+	for index := range state.pots {
 		score += index
 	}
 	return score
 }
 
-func (state *State) Next(rules Rules) State {
-	next := State{
-		Pots: map[int]bool{},
-		min:  state.min,
-		max:  state.max,
+func (s *state) next(rules rules) state {
+	next := state{
+		pots: map[int]bool{},
+		min:  s.min,
+		max:  s.max,
 	}
 
-	for i := state.min - 2; i < state.max+3; i++ {
-		output, exists := rules[Pattern{
-			state.Pots[i-2],
-			state.Pots[i-1],
-			state.Pots[i+0],
-			state.Pots[i+1],
-			state.Pots[i+2],
+	for i := s.min - 2; i < s.max+3; i++ {
+		output, exists := rules[pattern{
+			s.pots[i-2],
+			s.pots[i-1],
+			s.pots[i+0],
+			s.pots[i+1],
+			s.pots[i+2],
 		}]
 
 		if exists && output {
-			next.Pots[i] = true
-			if i < state.min {
+			next.pots[i] = true
+			if i < s.min {
 				next.min = i
 			}
-			if i > state.max {
+			if i > s.max {
 				next.max = i
 			}
 		}
@@ -54,20 +54,20 @@ func (state *State) Next(rules Rules) State {
 	return next
 }
 
-func ParseInput(input string) (State, Rules) {
+func parse(input string) (state, rules) {
 	lines := strings.Split(input, "\n")
-	state := State{Pots: map[int]bool{}}
-	rules := Rules{}
+	state := state{pots: map[int]bool{}}
+	rules := rules{}
 
 	for i, char := range lines[0][15:] {
 		if char == '#' {
-			state.Pots[i] = true
+			state.pots[i] = true
 			state.max = i + 1
 		}
 	}
 
 	for _, line := range lines[2:] {
-		pattern := Pattern{
+		pattern := pattern{
 			line[0] == '#',
 			line[1] == '#',
 			line[2] == '#',
@@ -80,24 +80,24 @@ func ParseInput(input string) (State, Rules) {
 	return state, rules
 }
 
-func SolvePartOne(input string) int {
-	state, rules := ParseInput(input)
+func solvePartOne(input string) int {
+	state, rules := parse(input)
 
 	for gen := 0; gen < 20; gen++ {
-		state = state.Next(rules)
+		state = state.next(rules)
 	}
 
-	return state.Score()
+	return state.score()
 }
 
-func SolvePartTwo(input string) int {
+func solvePartTwo(input string) int {
 	generations := 50000000000
-	state, rules := ParseInput(input)
+	state, rules := parse(input)
 	var gen, run, lastScore, lastDiff int
 
 	for gen = 0; gen < generations; gen++ {
-		state = state.Next(rules)
-		score := state.Score()
+		state = state.next(rules)
+		score := state.score()
 		diff := score - lastScore
 
 		if diff == lastDiff {
@@ -113,12 +113,12 @@ func SolvePartTwo(input string) int {
 		lastScore, lastDiff = score, diff
 	}
 
-	return state.Score() + (generations-gen-1)*lastDiff
+	return state.score() + (generations-gen-1)*lastDiff
 }
 
 func main() {
 	bytes, _ := ioutil.ReadAll(os.Stdin)
 	input := strings.TrimSpace(string(bytes))
-	fmt.Println("Part 1:", SolvePartOne(input))
-	fmt.Println("Part 2:", SolvePartTwo(input))
+	fmt.Println("Part 1:", solvePartOne(input))
+	fmt.Println("Part 2:", solvePartTwo(input))
 }

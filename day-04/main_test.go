@@ -22,7 +22,7 @@ const example = `[1518-11-01 00:00] Guard #10 begins shift
 
 func TestSolvePartOne(t *testing.T) {
 	expected := 10 * 24
-	actual := SolvePartOne(example)
+	actual := solvePartOne(example)
 
 	if actual != expected {
 		t.Errorf(`Part 1: Expected: %d Actual: %d`, expected, actual)
@@ -31,7 +31,7 @@ func TestSolvePartOne(t *testing.T) {
 
 func TestSolvePartTwo(t *testing.T) {
 	expected := 99 * 45
-	actual := SolvePartTwo(example)
+	actual := solvePartTwo(example)
 
 	if actual != expected {
 		t.Errorf(`Part 2: Expected: "%d" Actual: "%d"`, expected, actual)

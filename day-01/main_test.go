@@ -8,7 +8,7 @@ import (
 func TestSolvePartOne(t *testing.T) {
 	example := strings.Replace("+1, -2, +3, +1", ", ", "\n", -1)
 	expected := 3
-	actual := SolvePartOne(example)
+	actual := solvePartOne(example)
 
 	if actual != expected {
 		t.Errorf(`Expected: %d Actual: %d`, expected, actual)
@@ -25,7 +25,7 @@ func TestSolvePartTwo(t *testing.T) {
 
 	for input, output := range examples {
 		input = strings.Replace(input, ", ", "\n", -1)
-		actual := SolvePartTwo(input)
+		actual := solvePartTwo(input)
 		expected := output
 
 		if actual != expected {

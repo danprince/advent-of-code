@@ -10,7 +10,7 @@ import (
 
 const required = 10
 
-func SolvePartOne(input string) string {
+func solvePartOne(input string) string {
 	loops, _ := strconv.Atoi(input)
 	scores := []int{3, 7}
 	elves := []int{0, 1}
@@ -43,7 +43,7 @@ func SolvePartOne(input string) string {
 	return output
 }
 
-func SolvePartTwo(input string) string {
+func solvePartTwo(input string) string {
 	search := []int{}
 	scores := []int{3, 7}
 	elves := []int{0, 1}
@@ -91,6 +91,6 @@ func SolvePartTwo(input string) string {
 func main() {
 	bytes, _ := ioutil.ReadAll(os.Stdin)
 	input := strings.TrimSpace(string(bytes))
-	fmt.Println("Part 1:", SolvePartOne(input))
-	fmt.Println("Part 2:", SolvePartTwo(input))
+	fmt.Println("Part 1:", solvePartOne(input))
+	fmt.Println("Part 2:", solvePartTwo(input))
 }

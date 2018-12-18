@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func SolvePartOne(input string) int {
+func solvePartOne(input string) int {
 	nums := strings.Split(input, "\n")
 	freq := 0
 
@@ -20,7 +20,7 @@ func SolvePartOne(input string) int {
 	return freq
 }
 
-func SolvePartTwo(input string) int {
+func solvePartTwo(input string) int {
 	nums := strings.Split(input, "\n")
 	seen := map[int]bool{}
 	freq := 0
@@ -42,6 +42,6 @@ func SolvePartTwo(input string) int {
 func main() {
 	bytes, _ := ioutil.ReadAll(os.Stdin)
 	input := strings.TrimSpace(string(bytes))
-	fmt.Println("Part 1:", SolvePartOne(input))
-	fmt.Println("Part 2:", SolvePartTwo(input))
+	fmt.Println("Part 1:", solvePartOne(input))
+	fmt.Println("Part 2:", solvePartTwo(input))
 }

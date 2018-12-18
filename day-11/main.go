@@ -8,16 +8,16 @@ import (
 	"strings"
 )
 
-func PowerLevel(x, y, serial int) int {
+func getPowerLevel(x, y, serial int) int {
 	id := x + 10
 	power := (id * y) + serial
 	return ((power * id % 1000) / 100) - 5
 }
 
-type SumTable [][]int
+type sumTable [][]int
 
-func CreateTable(width, height int, sum func(x, y int) int) SumTable {
-	table := make([][]int, width)
+func newSumTable(width, height int, sum func(x, y int) int) sumTable {
+	table := make(sumTable, width)
 
 	for x := 0; x < width; x++ {
 		table[x] = make([]int, height)
@@ -39,7 +39,7 @@ func CreateTable(width, height int, sum func(x, y int) int) SumTable {
 	return table
 }
 
-func (table SumTable) Area(x0, y0, x1, y1 int) int {
+func (table sumTable) Area(x0, y0, x1, y1 int) int {
 	if x0 < 0 || y0 < 0 || x1 >= len(table) || y1 >= len(table[x1]) {
 		return 0
 	}
@@ -47,12 +47,12 @@ func (table SumTable) Area(x0, y0, x1, y1 int) int {
 	return table[x1][y1] - table[x1][y0] - table[x0][y1] + table[x0][y0]
 }
 
-func SolvePartOne(input string) string {
+func solvePartOne(input string) string {
 	serial, _ := strconv.Atoi(input)
 	best, bx, by := 0, 0, 0
 
-	sum := CreateTable(300, 300, func(x, y int) int {
-		return PowerLevel(x, y, serial)
+	sum := newSumTable(300, 300, func(x, y int) int {
+		return getPowerLevel(x, y, serial)
 	})
 
 	for x := 0; x < 300; x++ {
@@ -67,12 +67,12 @@ func SolvePartOne(input string) string {
 	return fmt.Sprintf("%d,%d", bx+1, by+1)
 }
 
-func SolvePartTwo(input string) string {
+func solvePartTwo(input string) string {
 	serial, _ := strconv.Atoi(input)
 	best, bs, bx, by := 0, 0, 0, 0
 
-	sum := CreateTable(300, 300, func(x, y int) int {
-		return PowerLevel(x, y, serial)
+	sum := newSumTable(300, 300, func(x, y int) int {
+		return getPowerLevel(x, y, serial)
 	})
 
 	for s := 0; s < 300; s++ {
@@ -92,6 +92,6 @@ func SolvePartTwo(input string) string {
 func main() {
 	bytes, _ := ioutil.ReadAll(os.Stdin)
 	input := strings.TrimSpace(string(bytes))
-	fmt.Println("Part 1:", SolvePartOne(input))
-	fmt.Println("Part 2:", SolvePartTwo(input))
+	fmt.Println("Part 1:", solvePartOne(input))
+	fmt.Println("Part 2:", solvePartTwo(input))
 }

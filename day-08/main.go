@@ -8,40 +8,36 @@ import (
 	"strings"
 )
 
-type Node struct {
-	Children []Node
-	Metadata []int
+type node struct {
+	children []node
+	metadata []int
 }
 
-func (node Node) Sum() int {
+func (n node) sum() int {
 	total := 0
-
-	for _, child := range node.Children {
-		total += child.Sum()
+	for _, child := range n.children {
+		total += child.sum()
 	}
-
-	for _, meta := range node.Metadata {
+	for _, meta := range n.metadata {
 		total += meta
 	}
-
 	return total
 }
 
-func (node Node) Value() int {
+func (n node) val() int {
 	value := 0
-	n := len(node.Children)
+	size := len(n.children)
 
-	if n > 0 {
-		for _, meta := range node.Metadata {
+	if size > 0 {
+		for _, meta := range n.metadata {
 			i := meta - 1
 
-			if i < n {
-				child := node.Children[i]
-				value += child.Value()
+			if i < size {
+				value += n.children[i].val()
 			}
 		}
 	} else {
-		for _, meta := range node.Metadata {
+		for _, meta := range n.metadata {
 			value += meta
 		}
 	}
@@ -49,7 +45,7 @@ func (node Node) Value() int {
 	return value
 }
 
-func ParseTree(input string) Node {
+func parseTree(input string) node {
 	data := []int{}
 
 	for _, s := range strings.Split(input, " ") {
@@ -57,37 +53,37 @@ func ParseTree(input string) Node {
 		data = append(data, num)
 	}
 
-	tree, _ := ParseNode(data)
+	tree, _ := parseNode(data)
 	return tree
 }
 
-func ParseNode(data []int) (Node, []int) {
+func parseNode(data []int) (node, []int) {
 	n, m, data := data[0], data[1], data[2:]
 
-	var node, child Node
+	var node, child node
 
 	for i := 0; i < n; i++ {
-		child, data = ParseNode(data)
-		node.Children = append(node.Children, child)
+		child, data = parseNode(data)
+		node.children = append(node.children, child)
 	}
 
-	node.Metadata = data[:m]
+	node.metadata = data[:m]
 	data = data[m:]
 
 	return node, data
 }
 
-func SolvePartOne(input string) int {
-	return ParseTree(input).Sum()
+func solvePartOne(input string) int {
+	return parseTree(input).sum()
 }
 
-func SolvePartTwo(input string) int {
-	return ParseTree(input).Value()
+func solvePartTwo(input string) int {
+	return parseTree(input).val()
 }
 
 func main() {
 	bytes, _ := ioutil.ReadAll(os.Stdin)
 	input := strings.TrimSpace(string(bytes))
-	fmt.Println("Part 1:", SolvePartOne(input))
-	fmt.Println("Part 2:", SolvePartTwo(input))
+	fmt.Println("Part 1:", solvePartOne(input))
+	fmt.Println("Part 2:", solvePartTwo(input))
 }

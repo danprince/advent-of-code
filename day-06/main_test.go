@@ -10,7 +10,7 @@ const example = `1, 1
 8, 9`
 
 func TestSolvePartOne(t *testing.T) {
-	actual := SolvePartOne(example)
+	actual := solvePartOne(example)
 	expected := 17
 
 	if actual != expected {
@@ -19,7 +19,7 @@ func TestSolvePartOne(t *testing.T) {
 }
 
 func TestSolvePartTwo(t *testing.T) {
-	actual := SolvePartTwo(example, 32)
+	actual := solvePartTwo(example, 32)
 	expected := 16
 
 	if actual != expected {

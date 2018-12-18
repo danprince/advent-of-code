@@ -9,12 +9,12 @@ import (
 	"strings"
 )
 
-type Point struct {
+type point struct {
 	x int
 	y int
 }
 
-type Claim struct {
+type claim struct {
 	id int
 	x  int
 	y  int
@@ -22,11 +22,11 @@ type Claim struct {
 	h  int
 }
 
-func ParseClaims(input string) []Claim {
+func parseClaims(input string) []claim {
 	lines := strings.Split(input, "\n")
 	r := regexp.MustCompile(`#(\d+) @ (\d+),(\d+): (\d+)x(\d+)`)
 
-	claims := []Claim{}
+	claims := []claim{}
 
 	for _, line := range lines {
 		matches := r.FindStringSubmatch(line)
@@ -41,19 +41,19 @@ func ParseClaims(input string) []Claim {
 		w, _ := strconv.Atoi(matches[4])
 		h, _ := strconv.Atoi(matches[5])
 
-		claims = append(claims, Claim{id, x, y, w, h})
+		claims = append(claims, claim{id, x, y, w, h})
 	}
 
 	return claims
 }
 
-func PlotClaims(claims []Claim) map[Point][]int {
-	claimed := map[Point][]int{}
+func plotClaims(claims []claim) map[point][]int {
+	claimed := map[point][]int{}
 
 	for _, claim := range claims {
 		for x := claim.x; x < claim.x+claim.w; x++ {
 			for y := claim.y; y < claim.y+claim.h; y++ {
-				p := Point{x, y}
+				p := point{x, y}
 
 				if claimed[p] == nil {
 					claimed[p] = []int{}
@@ -67,9 +67,9 @@ func PlotClaims(claims []Claim) map[Point][]int {
 	return claimed
 }
 
-func SolvePartOne(input string) int {
-	claims := ParseClaims(input)
-	claimed := PlotClaims(claims)
+func solvePartOne(input string) int {
+	claims := parseClaims(input)
+	claimed := plotClaims(claims)
 	score := 0
 
 	for _, ids := range claimed {
@@ -81,9 +81,9 @@ func SolvePartOne(input string) int {
 	return score
 }
 
-func SolvePartTwo(input string) int {
-	claims := ParseClaims(input)
-	claimed := PlotClaims(claims)
+func solvePartTwo(input string) int {
+	claims := parseClaims(input)
+	claimed := plotClaims(claims)
 
 	overlaps := map[int]bool{}
 
@@ -111,6 +111,6 @@ func SolvePartTwo(input string) int {
 func main() {
 	bytes, _ := ioutil.ReadAll(os.Stdin)
 	input := string(bytes)
-	fmt.Println("Part 1:", SolvePartOne(input))
-	fmt.Println("Part 2:", SolvePartTwo(input))
+	fmt.Println("Part 1:", solvePartOne(input))
+	fmt.Println("Part 2:", solvePartTwo(input))
 }

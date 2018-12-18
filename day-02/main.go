@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func SolvePartOne(input string) int {
+func solvePartOne(input string) int {
 	ids := strings.Split(input, "\n")
 
 	twos := 0
@@ -38,7 +38,7 @@ func SolvePartOne(input string) int {
 	return twos * threes
 }
 
-func SolvePartTwo(input string) string {
+func solvePartTwo(input string) string {
 	ids := strings.Split(input, "\n")
 
 	for _, a := range ids {
@@ -69,6 +69,6 @@ func SolvePartTwo(input string) string {
 func main() {
 	bytes, _ := ioutil.ReadAll(os.Stdin)
 	input := strings.TrimSpace(string(bytes))
-	fmt.Println("Part 1:", SolvePartOne(input))
-	fmt.Println("Part 2:", SolvePartTwo(input))
+	fmt.Println("Part 1:", solvePartOne(input))
+	fmt.Println("Part 2:", solvePartTwo(input))
 }

@@ -20,7 +20,7 @@ wvxyz`
 
 func TestSolvePartOne(t *testing.T) {
 	expected := 12
-	actual := SolvePartOne(example1)
+	actual := solvePartOne(example1)
 
 	if actual != expected {
 		t.Errorf(`Part 1: Expected: %d Actual: %d`, expected, actual)
@@ -29,7 +29,7 @@ func TestSolvePartOne(t *testing.T) {
 
 func TestSolvePartTwo(t *testing.T) {
 	expected := "fgij"
-	actual := SolvePartTwo(example2)
+	actual := solvePartTwo(example2)
 
 	if actual != expected {
 		t.Errorf(`Part 2: Expected: "%s" Actual: "%s"`, expected, actual)

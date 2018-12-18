@@ -2,7 +2,7 @@ package main
 
 import "testing"
 
-func TestPowerLevel(t *testing.T) {
+func TestGetPowerLevel(t *testing.T) {
 	examples := []struct {
 		x      int
 		y      int
@@ -16,7 +16,7 @@ func TestPowerLevel(t *testing.T) {
 	}
 
 	for _, example := range examples {
-		actual := PowerLevel(example.x, example.y, example.serial)
+		actual := getPowerLevel(example.x, example.y, example.serial)
 		expected := example.power
 
 		if actual != expected {
@@ -33,7 +33,7 @@ func TestSolvePartOne(t *testing.T) {
 	}
 
 	for input, expected := range examples {
-		actual := SolvePartOne(input)
+		actual := solvePartOne(input)
 
 		if actual != expected {
 			t.Errorf(`Part 1: Expected: %#v Actual: %#v`, expected, actual)
@@ -49,7 +49,7 @@ func TestSolvePartTwo(t *testing.T) {
 	}
 
 	for input, expected := range examples {
-		actual := SolvePartTwo(input)
+		actual := solvePartTwo(input)
 
 		if actual != expected {
 			t.Errorf(`Part 2: Expected: %#v Actual: %#v`, expected, actual)

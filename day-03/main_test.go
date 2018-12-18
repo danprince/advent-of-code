@@ -8,7 +8,7 @@ const example = `#1 @ 1,3: 4x4
 
 func TestSolvePartOne(t *testing.T) {
 	expected := 4
-	actual := SolvePartOne(example)
+	actual := solvePartOne(example)
 
 	if actual != expected {
 		t.Errorf(`Part 1: Expected: %d Actual: %d`, expected, actual)
@@ -17,7 +17,7 @@ func TestSolvePartOne(t *testing.T) {
 
 func TestSolvePartTwo(t *testing.T) {
 	expected := 3
-	actual := SolvePartTwo(example)
+	actual := solvePartTwo(example)
 
 	if actual != expected {
 		t.Errorf(`Part 2: Expected: "%d" Actual: "%d"`, expected, actual)

@@ -9,12 +9,13 @@ import (
 	"os"
 )
 
-func DrawPartOne(input string, path string) {
-	grid := ParseGrid(input)
-	img := image.NewRGBA(image.Rect(0, 0, grid.X1-grid.X0, grid.Y1-grid.Y0))
+func drawPartOne(input string, path string) {
+	grid := parse(input)
+	bounds := image.Rect(0, 0, grid.x1-grid.x0, grid.y1-grid.y0)
+	img := image.NewRGBA(bounds)
 	palette := color.Palette{}
 
-	for i := 0; i < len(grid.Points); i++ {
+	for i := 0; i < len(grid.points); i++ {
 		palette = append(palette, color.RGBA{
 			uint8(rand.Intn(255)),
 			uint8(rand.Intn(255)),
@@ -23,14 +24,14 @@ func DrawPartOne(input string, path string) {
 		})
 	}
 
-	for x := 0; x < grid.X1; x++ {
-		for y := 0; y < grid.Y1; y++ {
+	for x := 0; x < grid.x1; x++ {
+		for y := 0; y < grid.y1; y++ {
 			min := math.MaxInt64
 			shared := false
 			region := 0
 
-			for id, b := range grid.Points {
-				dist := Distance(x, y, b.X, b.Y)
+			for id, b := range grid.points {
+				dist := distance(x, y, b.x, b.y)
 
 				if dist <= min {
 					region = id
@@ -46,12 +47,12 @@ func DrawPartOne(input string, path string) {
 	}
 
 	// Draw a cross at each point in the grid
-	for _, point := range grid.Points {
-		img.Set(point.X, point.Y, color.White)
-		img.Set(point.X-1, point.Y, color.White)
-		img.Set(point.X+1, point.Y, color.White)
-		img.Set(point.X, point.Y-1, color.White)
-		img.Set(point.X, point.Y+1, color.White)
+	for _, point := range grid.points {
+		img.Set(point.x, point.y, color.White)
+		img.Set(point.x-1, point.y, color.White)
+		img.Set(point.x+1, point.y, color.White)
+		img.Set(point.x, point.y-1, color.White)
+		img.Set(point.x, point.y+1, color.White)
 	}
 
 	file, err := os.Create(path)
@@ -67,19 +68,19 @@ func DrawPartOne(input string, path string) {
 	}
 }
 
-func DrawPartTwo(input string, distance int, path string) {
-	grid := ParseGrid(input)
-	img := image.NewRGBA(image.Rect(0, 0, grid.X1-grid.X0, grid.Y1-grid.Y0))
+func drawPartTwo(input string, dist int, path string) {
+	grid := parse(input)
+	img := image.NewRGBA(image.Rect(0, 0, grid.x1-grid.x0, grid.y1-grid.y0))
 
-	for x := 0; x < grid.X1; x++ {
-		for y := 0; y < grid.Y1; y++ {
+	for x := 0; x < grid.x1; x++ {
+		for y := 0; y < grid.y1; y++ {
 			total := 0
 
-			for _, point := range grid.Points {
-				total += Distance(x, y, point.X, point.Y)
+			for _, point := range grid.points {
+				total += distance(x, y, point.x, point.y)
 			}
 
-			if int(total) < distance {
+			if int(total) < dist {
 				img.Set(x, y, color.Black)
 			}
 		}
@@ -88,12 +89,12 @@ func DrawPartTwo(input string, distance int, path string) {
 	red := color.RGBA{255, 0, 0, 255}
 
 	// Draw a marker at each point in the grid
-	for _, point := range grid.Points {
-		img.Set(point.X, point.Y, red)
-		img.Set(point.X-1, point.Y, red)
-		img.Set(point.X+1, point.Y, red)
-		img.Set(point.X, point.Y-1, red)
-		img.Set(point.X, point.Y+1, red)
+	for _, point := range grid.points {
+		img.Set(point.x, point.y, red)
+		img.Set(point.x-1, point.y, red)
+		img.Set(point.x+1, point.y, red)
+		img.Set(point.x, point.y-1, red)
+		img.Set(point.x, point.y+1, red)
 	}
 
 	file, err := os.Create(path)

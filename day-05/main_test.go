@@ -12,7 +12,7 @@ func TestSolvePartOne(t *testing.T) {
 	}
 
 	for input, expected := range examples {
-		actual := SolvePartOne(input)
+		actual := solvePartOne(input)
 
 		if actual != expected {
 			t.Errorf(`Part 1: Expected: %#v Actual: %#v`, expected, actual)
@@ -23,7 +23,7 @@ func TestSolvePartOne(t *testing.T) {
 func TestSolvePartTwo(t *testing.T) {
 	example := `dabAcCaCBAcCcaDA`
 	expected := 4
-	actual := SolvePartTwo(example)
+	actual := solvePartTwo(example)
 
 	if actual != expected {
 		t.Errorf(`Part 2: Expected: %#v Actual: %#v`, expected, actual)
