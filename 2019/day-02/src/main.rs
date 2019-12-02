@@ -36,8 +36,8 @@ fn part_two() -> usize {
 
     let program = parse_program(&src);
 
-    for noun in 0..100 {
-        for verb in 0..100 {
+    for noun in 0..99 {
+        for verb in 0..99 {
             let mut local_program = program.clone();
             local_program[1] = noun;
             local_program[2] = verb;
