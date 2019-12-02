@@ -24,7 +24,7 @@ fn part_two() -> i32 {
 }
 
 fn calculate_required_fuel(mass: i32) -> i32 {
-    (f64::from(mass) / 3.0).floor() as i32 - 2
+    (mass as f64 / 3.0).floor() as i32 - 2
 }
 
 fn calculate_required_fuel_recursive(mass: i32) -> i32 {
