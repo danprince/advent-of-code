@@ -9,26 +9,6 @@ mod opcodes {
 }
 
 fn main() {
-    println!("Part 1: {}", part_one());
-    println!("Part 2: {}", part_two());
-}
-
-fn part_one() -> usize {
-    let src = fs::read_to_string("./input/input.txt")
-        .unwrap()
-        .trim()
-        .to_string();
-
-    let mut program = parse_program(&src);
-
-    program[1] = 12;
-    program[2] = 2;
-
-    program = run_program(program);
-    program[0]
-}
-
-fn part_two() -> usize {
     let src = fs::read_to_string("./input/input.txt")
         .unwrap()
         .trim()
@@ -36,6 +16,19 @@ fn part_two() -> usize {
 
     let program = parse_program(&src);
 
+    println!("Part 1: {}", part_one(program.clone()));
+    println!("Part 2: {}", part_two(program.clone()));
+}
+
+fn part_one(mut program: Program) -> usize {
+    program[1] = 12;
+    program[2] = 2;
+
+    program = run_program(program);
+    program[0]
+}
+
+fn part_two(program: Program) -> usize {
     for noun in 0..99 {
         for verb in 0..99 {
             let mut local_program = program.clone();
