@@ -1,24 +1,23 @@
 use std::fs;
 
 fn main() {
-    println!("Part 1: {}", part_one());
-    println!("Part 2: {}", part_two());
-}
-
-fn part_one() -> i32 {
-    fs::read_to_string("./input/input.txt")
+    let masses: Vec<i32> = fs::read_to_string("./input/input.txt")
         .expect("Could not read input")
         .lines()
         .map(|line| line.parse::<i32>().unwrap())
-        .map(calculate_required_fuel)
-        .sum()
+        .collect();
+
+    println!("Part 1: {}", part_one(masses.clone()));
+    println!("Part 2: {}", part_two(masses.clone()));
 }
 
-fn part_two() -> i32 {
-    fs::read_to_string("./input/input.txt")
-        .expect("Could not read input")
-        .lines()
-        .map(|line| line.parse::<i32>().unwrap())
+fn part_one(masses: Vec<i32>) -> i32 {
+    masses.into_iter().map(calculate_required_fuel).sum()
+}
+
+fn part_two(masses: Vec<i32>) -> i32 {
+    masses
+        .into_iter()
         .map(calculate_required_fuel_recursive)
         .sum()
 }
