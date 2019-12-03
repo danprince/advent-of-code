@@ -44,7 +44,7 @@ fn part_two() -> usize {
             local_program = run_program(local_program);
 
             if local_program[0] == 19690720 {
-                return 100 * noun + verb
+                return 100 * noun + verb;
             }
         }
     }
@@ -72,6 +72,7 @@ fn run_program(mut program: Program) -> Program {
                 program[c] = program[a] + program[b];
                 ip += 4;
             }
+
             opcodes::MUL => {
                 let a = program[ip + 1];
                 let b = program[ip + 2];
@@ -79,8 +80,10 @@ fn run_program(mut program: Program) -> Program {
                 program[c] = program[a] * program[b];
                 ip += 4;
             }
+
             opcodes::HALT => break,
-            code => panic!("Unknown op code {}", code),
+
+            opcode => panic!("Unknown opcode {}", opcode),
         }
     }
 
