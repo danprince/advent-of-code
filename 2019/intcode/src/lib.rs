@@ -1,152 +1,331 @@
-#[derive(Debug)]
-pub enum Instruction {
-    Add(i32, i32, i32),
-    Multiply(i32, i32, i32),
-    Input(i32),
-    Output(i32),
-    JumpIfTrue(i32, i32),
-    JumpIfFalse(i32, i32),
-    LessThan(i32, i32, i32),
-    Equals(i32, i32, i32),
-    Halt,
+extern crate num_derive;
+extern crate num_traits;
+
+use num_derive::FromPrimitive;
+use num_traits::FromPrimitive;
+use std::collections::VecDeque;
+
+
+#[derive(FromPrimitive, Debug)]
+enum Opcode {
+    ADD = 1,
+    MUL = 2,
+    IN = 3,
+    OUT = 4,
+    JIT = 5,
+    JIF = 6,
+    LT = 7,
+    EQ = 8,
+    HLT = 99,
+}
+
+#[derive(FromPrimitive, Debug)]
+enum ParameterMode {
+    Position = 0,
+    Immediate = 1,
+}
+
+#[derive(Debug, PartialEq)]
+pub enum Status {
+    Running,
+    WaitingForInput,
+    Halted,
 }
 
 #[derive(Debug)]
-pub struct CPU {
+pub struct VM {
     pub mem: Vec<i32>,
     pub ip: usize,
-    pub input: i32,
-    pub output: i32,
+    pub input: VecDeque<i32>,
+    pub output: VecDeque<i32>,
+    pub status: Status,
 }
 
-#[derive(Debug)]
-pub enum Mode {
-    Position,
-    Immediate,
-}
-
-impl Mode {
-    pub fn parse(num: i32) -> Mode {
-        match num {
-            0 => Mode::Position,
-            1 => Mode::Immediate,
-            _ => panic!("Unsupported mode: {}", num),
-        }
+impl Opcode {
+    fn parse(code: i32) -> (Opcode, ParameterMode, ParameterMode, ParameterMode) {
+        let opcode = Opcode::from_i32(code % 100).unwrap();
+        let mode_a = ParameterMode::from_i32(code / 10000 % 10).unwrap();
+        let mode_b = ParameterMode::from_i32(code / 1000 % 10).unwrap();
+        let mode_c = ParameterMode::from_i32(code / 100 % 10).unwrap();
+        (opcode, mode_a, mode_b, mode_c)
     }
 }
 
-impl CPU {
-    /// Initialize an empty CPU instance
-    pub fn new() -> CPU {
-        CPU {
-            mem: vec![],
-            input: 0,
-            output: 0,
+impl VM {
+    pub fn new() -> VM {
+        VM {
+            mem: Vec::new(),
             ip: 0,
+            input: VecDeque::new(),
+            output: VecDeque::new(),
+            status: Status::Running,
         }
     }
 
-    /// Read the next value based on the parameter mode and increment
-    /// the instruction pointer.
-    fn next(&mut self, mode: Mode) -> i32 {
-        let parameter = self.mem[self.ip];
-
-        self.ip += 1;
-
-        match mode {
-            Mode::Position => self.mem[parameter as usize],
-            Mode::Immediate => parameter,
-        }
+    pub fn load(&mut self, program: Vec<i32>) {
+        self.mem = program;
+        self.ip = 0;
+        self.input = VecDeque::new();
+        self.output = VecDeque::new();
     }
 
-    /// Fetch the next instruction and increment the instruction
-    /// pointer.
-    fn fetch(&mut self) -> Instruction {
-        let instruction = self.mem[self.ip];
-
-        self.ip += 1;
-
-        let opcode = instruction % 100;
-        let _mode_a = Mode::parse(instruction / 10000 % 10);
-        let mode_b = Mode::parse(instruction / 1000 % 10);
-        let mode_c = Mode::parse(instruction / 100 % 10);
-
-        match opcode {
-            1 => Instruction::Add(
-                self.next(mode_c),
-                self.next(mode_b),
-                self.next(Mode::Immediate),
-            ),
-            2 => Instruction::Multiply(
-                self.next(mode_c),
-                self.next(mode_b),
-                self.next(Mode::Immediate),
-            ),
-            3 => Instruction::Input(self.next(Mode::Immediate)),
-            4 => Instruction::Output(self.next(Mode::Immediate)),
-            5 => Instruction::JumpIfTrue(self.next(mode_c), self.next(mode_b)),
-            6 => Instruction::JumpIfFalse(self.next(mode_c), self.next(mode_b)),
-            7 => Instruction::LessThan(
-                self.next(mode_c),
-                self.next(mode_b),
-                self.next(Mode::Immediate),
-            ),
-            8 => Instruction::Equals(
-                self.next(mode_c),
-                self.next(mode_b),
-                self.next(Mode::Immediate),
-            ),
-            99 => Instruction::Halt,
-            code => panic!("Unsupported opcode: {}", code),
-        }
+    pub fn add_input(&mut self, value: i32) {
+        self.input.push_back(value);
     }
 
-    // Execute instructions until the "Halt" instruction is reached
-    pub fn execute(&mut self) {
+    pub fn get_output(&mut self) -> Option<i32> {
+        self.output.pop_back()
+    }
+
+    pub fn run(&mut self) -> Status {
+        use Opcode::*;
+
         loop {
-            let instruction = self.fetch();
+            let value = self.mem[self.ip];
+            let (opcode, _mode_a, mode_b, mode_c) = Opcode::parse(value);
 
-            match instruction {
-                Instruction::Add(a, b, c) => {
-                    self.mem[c as usize] = a + b;
+            match opcode {
+                ADD => {
+                    let a = self.read(self.ip + 1, mode_c);
+                    let b = self.read(self.ip + 2, mode_b);
+                    let c = self.mem[self.ip + 3] as usize;
+                    self.mem[c] = a + b;
+                    self.ip += 4;
                 }
-                Instruction::Multiply(a, b, c) => {
-                    self.mem[c as usize] = a * b;
+                MUL => {
+                    let a = self.read(self.ip + 1, mode_c);
+                    let b = self.read(self.ip + 2, mode_b);
+                    let c = self.mem[self.ip + 3] as usize;
+                    self.mem[c] = a * b;
+                    self.ip += 4;
                 }
-                Instruction::Input(a) => {
-                    self.mem[a as usize] = self.input;
-                }
-                Instruction::Output(a) => {
-                    self.output = self.mem[a as usize];
-                }
-                Instruction::JumpIfTrue(a, b) => {
-                    if a != 0 {
-                        self.ip = b as usize;
+                IN => match self.input.pop_front() {
+                    Some(value) => {
+                        let a = self.mem[self.ip + 1] as usize;
+                        self.mem[a] = value;
+                        self.ip += 2;
                     }
+                    None => return Status::WaitingForInput,
+                },
+                OUT => {
+                    let a = self.read(self.ip + 1, mode_c);
+                    self.output.push_back(a);
+                    self.ip += 2;
                 }
-                Instruction::JumpIfFalse(a, b) => {
-                    if a == 0 {
-                        self.ip = b as usize;
-                    }
+                JIT => {
+                    let a = self.read(self.ip + 1, mode_c);
+                    let b = self.read(self.ip + 2, mode_b) as usize;
+                    self.ip = if a != 0 { b } else { self.ip + 3 };
                 }
-                Instruction::LessThan(a, b, c) => {
-                    self.mem[c as usize] = match a < b {
-                        true => 1,
-                        false => 0,
-                    }
+                JIF => {
+                    let a = self.read(self.ip + 1, mode_c);
+                    let b = self.read(self.ip + 2, mode_b) as usize;
+                    self.ip = if a == 0 { b } else { self.ip + 3 };
                 }
-                Instruction::Equals(a, b, c) => {
-                    self.mem[c as usize] = match a == b {
-                        true => 1,
-                        false => 0,
-                    }
+                LT => {
+                    let a = self.read(self.ip + 1, mode_c);
+                    let b = self.read(self.ip + 2, mode_b);
+                    let c = self.mem[self.ip + 3] as usize;
+                    self.mem[c] = (a < b) as i32;
+                    self.ip += 4;
                 }
-                Instruction::Halt => break,
+                EQ => {
+                    let a = self.read(self.ip + 1, mode_c);
+                    let b = self.read(self.ip + 2, mode_b);
+                    let c = self.mem[self.ip + 3] as usize;
+                    self.mem[c] = (a == b) as i32;
+                    self.ip += 4;
+                }
+                HLT => {
+                    self.ip += 1;
+                    return Status::Halted;
+                }
             }
         }
     }
 
-    pub fn parse(src: &str) -> Vec<i32> {
-        src.split(",").map(|c| c.parse::<i32>().unwrap()).collect()
+    fn read(&mut self, addr: usize, mode: ParameterMode) -> i32 {
+        let parameter = self.mem[addr];
+
+        match mode {
+            ParameterMode::Position => self.mem[parameter as usize],
+            ParameterMode::Immediate => parameter,
+        }
+    }
+}
+
+pub fn parse(src: &str) -> Vec<i32> {
+    src.split(",").map(|c| c.parse::<i32>().unwrap()).collect()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_position_mode() {
+        let mut vm = VM::new();
+        vm.load(vec![1, 1, 2, 3, 99]);
+        vm.run();
+        assert_eq!(vm.mem, [01, 1, 2, 3, 99]);
+    }
+
+    #[test]
+    fn test_immediate_mode() {
+        let mut vm = VM::new();
+        vm.load(vec![11101, 5, 5, 3, 99]);
+        vm.run();
+        assert_eq!(vm.mem, [11101, 5, 5, 10, 99]);
+    }
+
+    #[test]
+    fn test_mixed_modes() {
+        let mut vm = VM::new();
+        vm.load(vec![101, 5, 2, 3, 99]);
+        vm.run();
+        assert_eq!(vm.mem, [101, 5, 2, 7, 99]);
+
+        let mut vm = VM::new();
+        vm.load(vec![1001, 1, 5, 3, 99]);
+        vm.run();
+        assert_eq!(vm.mem, [1001, 1, 5, 6, 99]);
+    }
+
+    #[test]
+    fn test_add() {
+        let mut vm = VM::new();
+        vm.load(vec![1101, 10, 10, 3, 99]);
+        vm.run();
+        assert_eq!(vm.mem, [1101, 10, 10, 20, 99]);
+    }
+
+    #[test]
+    fn test_mul() {
+        let mut vm = VM::new();
+        vm.load(vec![1102, 2, 10, 3, 99]);
+        vm.run();
+        assert_eq!(vm.mem, [1102, 2, 10, 20, 99]);
+    }
+
+    #[test]
+    fn test_input() {
+        let mut vm = VM::new();
+        vm.load(vec![1103, 2, 0, 99]);
+        vm.add_input(3);
+        vm.run();
+        assert_eq!(vm.mem, [1103, 2, 3, 99]);
+    }
+
+    #[test]
+    fn test_input_blocking() {
+        let mut vm = VM::new();
+        vm.load(vec![103, 2, 0, 99]);
+        assert_eq!(vm.run(), Status::WaitingForInput);
+        vm.add_input(3);
+        vm.run();
+        assert_eq!(vm.mem, [103, 2, 3, 99]);
+    }
+
+    #[test]
+    fn test_output() {
+        let mut vm = VM::new();
+        vm.load(vec![104, 3, 99]);
+        vm.run();
+        assert_eq!(vm.output, [3]);
+    }
+
+    #[test]
+    fn test_halt() {
+        let mut vm = VM::new();
+        vm.load(vec![99]);
+        assert_eq!(vm.run(), Status::Halted);
+    }
+
+    #[test]
+    fn test_jump_if_false() {
+        let mut vm = VM::new();
+        vm.load(vec![
+            3, 12, 6, 12, 15, 1, 13, 14, 13, 4, 13, 99, -1, 0, 1, 9,
+        ]);
+        vm.add_input(0);
+        vm.run();
+        assert_eq!(vm.output, [0]);
+
+        let mut vm = VM::new();
+        vm.load(vec![
+            3, 12, 6, 12, 15, 1, 13, 14, 13, 4, 13, 99, -1, 0, 1, 9,
+        ]);
+        vm.add_input(33);
+        vm.run();
+        assert_eq!(vm.output, [1]);
+    }
+
+    #[test]
+    fn test_jump_if_true() {
+        let mut vm = VM::new();
+        vm.load(vec![3, 3, 1105, -1, 9, 1101, 0, 0, 12, 4, 12, 99, 1]);
+        vm.add_input(0);
+        vm.run();
+        assert_eq!(vm.output, [0]);
+
+        let mut vm = VM::new();
+        vm.load(vec![3, 3, 1105, -1, 9, 1101, 0, 0, 12, 4, 12, 99, 1]);
+        vm.add_input(33);
+        vm.run();
+        assert_eq!(vm.output, [1]);
+    }
+
+    #[test]
+    fn test_equal() {
+        let mut vm = VM::new();
+        vm.load(vec![3, 3, 1108, -1, 8, 3, 4, 3, 99]);
+        vm.add_input(8);
+        vm.run();
+        assert_eq!(vm.output, [1]);
+
+        let mut vm = VM::new();
+        vm.load(vec![3, 3, 1108, -1, 8, 3, 4, 3, 99]);
+        vm.add_input(3);
+        vm.run();
+        assert_eq!(vm.output, [0]);
+
+        let mut vm = VM::new();
+        vm.load(vec![3, 9, 8, 9, 10, 9, 4, 9, 99, -1, 8]);
+        vm.add_input(8);
+        vm.run();
+        assert_eq!(vm.output, [1]);
+
+        let mut vm = VM::new();
+        vm.load(vec![3, 9, 8, 9, 10, 9, 4, 9, 99, -1, 8]);
+        vm.add_input(3);
+        vm.run();
+        assert_eq!(vm.output, [0]);
+    }
+
+    #[test]
+    fn test_less_than() {
+        let mut vm = VM::new();
+        vm.load(vec![3, 9, 7, 9, 10, 9, 4, 9, 99, -1, 8]);
+        vm.add_input(8);
+        vm.run();
+        assert_eq!(vm.output, [0]);
+
+        let mut vm = VM::new();
+        vm.load(vec![3, 9, 7, 9, 10, 9, 4, 9, 99, -1, 8]);
+        vm.add_input(3);
+        vm.run();
+        assert_eq!(vm.output, [1]);
+
+        let mut vm = VM::new();
+        vm.load(vec![3, 3, 1107, -1, 8, 3, 4, 3, 99]);
+        vm.add_input(8);
+        vm.run();
+        assert_eq!(vm.output, [0]);
+
+        let mut vm = VM::new();
+        vm.load(vec![3, 3, 1107, -1, 8, 3, 4, 3, 99]);
+        vm.add_input(3);
+        vm.run();
+        assert_eq!(vm.output, [1]);
     }
 }
