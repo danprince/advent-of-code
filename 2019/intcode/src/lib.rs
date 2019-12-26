@@ -5,7 +5,6 @@ use num_derive::FromPrimitive;
 use num_traits::FromPrimitive;
 use std::collections::VecDeque;
 
-
 #[derive(FromPrimitive, Debug)]
 enum Opcode {
     ADD = 1,
@@ -16,6 +15,7 @@ enum Opcode {
     JIF = 6,
     LT = 7,
     EQ = 8,
+    RBO = 9,
     HLT = 99,
 }
 
@@ -23,6 +23,7 @@ enum Opcode {
 enum ParameterMode {
     Position = 0,
     Immediate = 1,
+    Relative = 2,
 }
 
 #[derive(Debug, PartialEq)]
@@ -34,19 +35,27 @@ pub enum Status {
 
 #[derive(Debug)]
 pub struct VM {
-    pub mem: Vec<i32>,
+    pub mem: Vec<i64>,
     pub ip: usize,
-    pub input: VecDeque<i32>,
-    pub output: VecDeque<i32>,
+    pub input: VecDeque<i64>,
+    pub output: VecDeque<i64>,
     pub status: Status,
+    pub relative_address: usize,
 }
 
 impl Opcode {
-    fn parse(code: i32) -> (Opcode, ParameterMode, ParameterMode, ParameterMode) {
-        let opcode = Opcode::from_i32(code % 100).unwrap();
-        let mode_a = ParameterMode::from_i32(code / 10000 % 10).unwrap();
-        let mode_b = ParameterMode::from_i32(code / 1000 % 10).unwrap();
-        let mode_c = ParameterMode::from_i32(code / 100 % 10).unwrap();
+    fn parse(code: i64) -> (Opcode, ParameterMode, ParameterMode, ParameterMode) {
+        let opcode = Opcode::from_i64(code % 100).expect("Could not parse opcode");
+
+        let mode_a = ParameterMode::from_i64(code / 10000 % 10)
+            .expect("Could not parse mode for parameter a");
+
+        let mode_b = ParameterMode::from_i64(code / 1000 % 10)
+            .expect("Could not parse mode for parameter b");
+
+        let mode_c =
+            ParameterMode::from_i64(code / 100 % 10).expect("Could not parse mode for parameter c");
+
         (opcode, mode_a, mode_b, mode_c)
     }
 }
@@ -59,82 +68,108 @@ impl VM {
             input: VecDeque::new(),
             output: VecDeque::new(),
             status: Status::Running,
+            relative_address: 0,
         }
     }
 
-    pub fn load(&mut self, program: Vec<i32>) {
+    pub fn load(&mut self, program: Vec<i64>) {
         self.mem = program;
         self.ip = 0;
         self.input = VecDeque::new();
         self.output = VecDeque::new();
     }
 
-    pub fn add_input(&mut self, value: i32) {
+    pub fn add_input(&mut self, value: i64) {
         self.input.push_back(value);
     }
 
-    pub fn get_output(&mut self) -> Option<i32> {
+    pub fn get_output(&mut self) -> Option<i64> {
         self.output.pop_back()
+    }
+
+    #[allow(dead_code)]
+    fn debug_instruction(&self, addr: usize) {
+        let value = self.read(addr);
+        let (opcode, mode_a, mode_b, mode_c) = Opcode::parse(value);
+
+        println!(
+            "{:>3} | {:<3} {:9} {:9} {:9} | {:9} {:9} {:9}",
+            self.ip,
+            format!("{:?}", opcode),
+            self.read(self.ip + 1),
+            self.read(self.ip + 2),
+            self.read(self.ip + 3),
+            format!("{:?}", mode_c),
+            format!("{:?}", mode_b),
+            format!("{:?}", mode_a),
+        );
     }
 
     pub fn run(&mut self) -> Status {
         use Opcode::*;
 
         loop {
-            let value = self.mem[self.ip];
-            let (opcode, _mode_a, mode_b, mode_c) = Opcode::parse(value);
+            let value = self.read(self.ip);
+            let (opcode, mode_a, mode_b, mode_c) = Opcode::parse(value);
+
+            //self.debug_instruction(self.ip);
 
             match opcode {
                 ADD => {
-                    let a = self.read(self.ip + 1, mode_c);
-                    let b = self.read(self.ip + 2, mode_b);
-                    let c = self.mem[self.ip + 3] as usize;
-                    self.mem[c] = a + b;
+                    let a = self.read_value(self.ip + 1, mode_c);
+                    let b = self.read_value(self.ip + 2, mode_b);
+                    let c = self.read_address(self.ip + 3, mode_a);
+                    self.write(c, a + b);
                     self.ip += 4;
                 }
                 MUL => {
-                    let a = self.read(self.ip + 1, mode_c);
-                    let b = self.read(self.ip + 2, mode_b);
-                    let c = self.mem[self.ip + 3] as usize;
-                    self.mem[c] = a * b;
+                    let a = self.read_value(self.ip + 1, mode_c);
+                    let b = self.read_value(self.ip + 2, mode_b);
+                    let c = self.read_address(self.ip + 3, mode_a);
+                    self.write(c, a * b);
                     self.ip += 4;
                 }
                 IN => match self.input.pop_front() {
                     Some(value) => {
-                        let a = self.mem[self.ip + 1] as usize;
-                        self.mem[a] = value;
+                        let a = self.read_address(self.ip + 1, mode_c);
+                        self.write(a, value);
                         self.ip += 2;
                     }
                     None => return Status::WaitingForInput,
                 },
                 OUT => {
-                    let a = self.read(self.ip + 1, mode_c);
+                    let a = self.read_value(self.ip + 1, mode_c);
                     self.output.push_back(a);
                     self.ip += 2;
                 }
                 JIT => {
-                    let a = self.read(self.ip + 1, mode_c);
-                    let b = self.read(self.ip + 2, mode_b) as usize;
+                    let a = self.read_value(self.ip + 1, mode_c);
+                    let b = self.read_value(self.ip + 2, mode_b) as usize;
                     self.ip = if a != 0 { b } else { self.ip + 3 };
                 }
                 JIF => {
-                    let a = self.read(self.ip + 1, mode_c);
-                    let b = self.read(self.ip + 2, mode_b) as usize;
+                    let a = self.read_value(self.ip + 1, mode_c);
+                    let b = self.read_value(self.ip + 2, mode_b) as usize;
                     self.ip = if a == 0 { b } else { self.ip + 3 };
                 }
                 LT => {
-                    let a = self.read(self.ip + 1, mode_c);
-                    let b = self.read(self.ip + 2, mode_b);
-                    let c = self.mem[self.ip + 3] as usize;
-                    self.mem[c] = (a < b) as i32;
+                    let a = self.read_value(self.ip + 1, mode_c);
+                    let b = self.read_value(self.ip + 2, mode_b);
+                    let c = self.read_address(self.ip + 3, mode_a);
+                    self.write(c, (a < b) as i64);
                     self.ip += 4;
                 }
                 EQ => {
-                    let a = self.read(self.ip + 1, mode_c);
-                    let b = self.read(self.ip + 2, mode_b);
-                    let c = self.mem[self.ip + 3] as usize;
-                    self.mem[c] = (a == b) as i32;
+                    let a = self.read_value(self.ip + 1, mode_c);
+                    let b = self.read_value(self.ip + 2, mode_b);
+                    let c = self.read_address(self.ip + 3, mode_a);
+                    self.write(c, (a == b) as i64);
                     self.ip += 4;
+                }
+                RBO => {
+                    let a = self.read_value(self.ip + 1, mode_c) as isize;
+                    self.relative_address = (self.relative_address as isize + a) as usize;
+                    self.ip += 2;
                 }
                 HLT => {
                     self.ip += 1;
@@ -144,23 +179,65 @@ impl VM {
         }
     }
 
-    fn read(&mut self, addr: usize, mode: ParameterMode) -> i32 {
-        let parameter = self.mem[addr];
+    fn read_value(&self, addr: usize, mode: ParameterMode) -> i64 {
+        let raw = self.read(addr);
 
         match mode {
-            ParameterMode::Position => self.mem[parameter as usize],
-            ParameterMode::Immediate => parameter,
+            ParameterMode::Position => self.read(raw as usize),
+            ParameterMode::Immediate => raw,
+            ParameterMode::Relative => self.read((raw + self.relative_address as i64) as usize),
         }
+    }
+
+    fn read_address(&self, addr: usize, mode: ParameterMode) -> usize {
+        let raw = self.read(addr);
+
+        match mode {
+            ParameterMode::Position => raw as usize,
+            ParameterMode::Immediate => raw as usize,
+            ParameterMode::Relative => (self.relative_address as i64 + raw) as usize,
+        }
+    }
+
+    pub fn read(&self, addr: usize) -> i64 {
+        if addr < self.mem.len() {
+            self.mem[addr]
+        } else {
+            0
+        }
+    }
+
+    pub fn write(&mut self, addr: usize, val: i64) {
+        if addr >= self.mem.len() {
+            self.mem.resize(addr + 1, 0);
+        }
+
+        self.mem[addr] = val;
     }
 }
 
-pub fn parse(src: &str) -> Vec<i32> {
-    src.split(",").map(|c| c.parse::<i32>().unwrap()).collect()
+pub fn parse(src: &str) -> Vec<i64> {
+    src.split(",").map(|c| c.parse::<i64>().unwrap()).collect()
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_read_additional_memory() {
+        let mut vm = VM::new();
+        vm.load(vec![3]);
+        assert_eq!(vm.read(5), 0);
+    }
+
+    #[test]
+    fn test_write_additional_memory() {
+        let mut vm = VM::new();
+        vm.load(vec![3]);
+        vm.write(3, 5);
+        assert_eq!(vm.mem, [3, 0, 0, 5]);
+    }
 
     #[test]
     fn test_position_mode() {
@@ -176,6 +253,15 @@ mod tests {
         vm.load(vec![11101, 5, 5, 3, 99]);
         vm.run();
         assert_eq!(vm.mem, [11101, 5, 5, 10, 99]);
+    }
+
+    #[test]
+    fn test_relative_mode() {
+        let mut vm = VM::new();
+        vm.load(vec![11201, 0, 5, 3, 99]);
+        vm.relative_address = 2;
+        vm.run();
+        assert_eq!(vm.mem, [11201, 0, 5, 10, 99]);
     }
 
     #[test]
@@ -327,5 +413,13 @@ mod tests {
         vm.add_input(3);
         vm.run();
         assert_eq!(vm.output, [1]);
+    }
+
+    #[test]
+    fn test_relative_base_offset() {
+        let mut vm = VM::new();
+        vm.load(vec![11109, 3, 99]);
+        vm.run();
+        assert_eq!(vm.relative_address, 3);
     }
 }
