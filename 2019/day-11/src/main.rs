@@ -1,12 +1,17 @@
 extern crate intcode;
 
-use intcode::VM;
 use intcode::Status;
+use intcode::VM;
+use std::cmp::{max, min};
 use std::collections::HashMap;
-use std::cmp::{min, max};
 use Direction::*;
 
-enum Direction { Up, Right, Down, Left }
+enum Direction {
+    Up,
+    Right,
+    Down,
+    Left,
+}
 
 const BLACK: i64 = 0;
 const WHITE: i64 = 1;
@@ -93,7 +98,7 @@ impl Robot {
             self.forward();
 
             if let Status::Halted = status {
-                break
+                break;
             }
         }
     }
