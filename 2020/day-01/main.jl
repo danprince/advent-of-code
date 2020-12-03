@@ -3,7 +3,7 @@ using Test
 function part1(input)
     nums = parse_input(input)
 
-    for (x, y) in Iterators.product(nums, nums)
+    for x in nums, y in nums
         if x + y == 2020
             return x * y
         end
@@ -13,7 +13,7 @@ end
 function part2(input)
     nums = parse_input(input)
 
-    for (x, y, z) in Iterators.product(nums, nums, nums)
+    for x in nums, y in nums, z in nums
         if x + y + z == 2020
             return x * y * z
         end
