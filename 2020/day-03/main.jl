@@ -17,10 +17,9 @@ function count_trees(grid, move)
     rows = length(grid)
     cols = length(grid[1])
 
-    count(1:dy:rows) do y
-        c = grid[y][x] == '#'
+    count(1+dy:dy:rows) do y
         x = (x + dx - 1) % cols + 1
-        return c
+        grid[y][x] == '#'
     end
 end
 
