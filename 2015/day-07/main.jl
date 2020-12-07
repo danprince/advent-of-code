@@ -14,46 +14,30 @@ function readwire!(wires, expr)
 end
 
 function evaluate!(wires, expr)
-    m = match(r"NOT (\w+)", expr)
+    parts = split(expr)
 
-    if m != nothing
-        a = readwire!(wires, m[1])
-        return ~a
+    if length(parts) == 1
+        readwire!(wires, parts[1])
+
+    elseif length(parts) == 2
+        # NOT is the only unary operator
+        ~readwire!(wires, parts[2])
+
+    elseif length(parts) == 3
+        lhs, op, rhs = parts
+        a = readwire!(wires, lhs)
+        b = readwire!(wires, rhs)
+
+        if op == "AND"
+            a & b
+        elseif op == "OR"
+            a | b
+        elseif op == "LSHIFT"
+            a << b
+        elseif op == "RSHIFT"
+            a >> b
+        end
     end
-
-    m = match(r"(\w+) AND (\w+)", expr)
-
-    if m != nothing
-        a = readwire!(wires, m[1])
-        b = readwire!(wires, m[2])
-        return a & b
-    end
-
-    m = match(r"(\w+) OR (\w+)", expr)
-
-    if m != nothing
-        a = readwire!(wires, m[1])
-        b = readwire!(wires, m[2])
-        return a | b
-    end
-
-    m = match(r"(\w+) LSHIFT (\d+)", expr)
-
-    if m != nothing
-        a = readwire!(wires, m[1])
-        b = readwire!(wires, m[2])
-        return a << b
-    end
-
-    m = match(r"(\w+) RSHIFT (\d+)", expr)
-
-    if m != nothing
-        a = readwire!(wires, m[1])
-        b = readwire!(wires, m[2])
-        return a >> b
-    end
-
-    return readwire!(wires, expr)
 end
 
 function emulate(input; overrides=Dict())
