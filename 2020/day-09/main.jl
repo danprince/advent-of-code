@@ -34,8 +34,9 @@ function part2(data; target)
             left += 1
 
         elseif left != right
-            window = sort!(data[left:right])
-            return window[1] + window[end]
+            window = @view data[left:right]
+            low, high = extrema(window)
+            return low + high
         end
     end
 end
@@ -67,8 +68,8 @@ example = [35
 open("input.txt") do file
     input = read(file, String)
     data = parse.(Int, split(input))
-    @time p1 = part1(data)
-    @time p2 = part2(data; target=p1)
+    p1 = part1(data)
+    p2 = part2(data; target=p1)
     println("Part 1: $p1")
     println("Part 2: $p2")
 end
