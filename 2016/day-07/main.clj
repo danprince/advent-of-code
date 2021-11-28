@@ -1,6 +1,5 @@
 (ns advent-of-code.day-07
-  (:require [clojure.string :as str]
-            [clojure.set :refer [intersection]]))
+  (:require [clojure.string :as str]))
 
 (defn parse-ip [ip]
   (map vector
