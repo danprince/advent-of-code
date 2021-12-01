@@ -1,4 +1,5 @@
-(require '[clojure.string :as str])
+(ns day-01
+  (:require [clojure.string :as str]))
 
 (def north [0 -1])
 (def east [1 0])

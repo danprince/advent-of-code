@@ -1,4 +1,4 @@
-(ns advent-of-code.day-06
+(ns day-06
   (:require [clojure.string :as str]))
 
 (defn cols->rows [input]

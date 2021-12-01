@@ -1,4 +1,4 @@
-(ns advent-of-code.day-05
+(ns day-05
   (:require [clojure.string :as str])
   (:import (java.security MessageDigest)
            (java.math BigInteger)))

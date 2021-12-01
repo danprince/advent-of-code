@@ -1,16 +1,16 @@
-(ns advent-of-code.day-03
+(ns day-03
   (:require [clojure.string :as str]))
 
 (def pattern #"\s*(\d+)\s+(\d+)\s+(\d+)\s*")
-
-(defn parse-triangles [s]
-  (->> (str/split-lines s)
-       (map parse-triangle)))
 
 (defn parse-triangle [s]
   (->> (re-matches pattern s)
        rest
        (map #(Integer/parseInt %))))
+
+(defn parse-triangles [s]
+  (->> (str/split-lines s)
+       (map parse-triangle)))
 
 (defn cols->rows
   [[[a1 b1 c1]

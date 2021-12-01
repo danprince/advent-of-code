@@ -1,4 +1,4 @@
-(ns advent-of-code.day-12
+(ns day-12
   (:require [clojure.string :as str]))
 
 (def op-table {"cpy" :cpy "inc" :inc "dec" :dec "jnz" :jnz})

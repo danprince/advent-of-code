@@ -1,4 +1,4 @@
-(ns advent-of-code.day-11
+(ns day-11
   (:require [clojure.string :as str]
             [clojure.set :refer [union difference]]))
 
@@ -161,7 +161,7 @@
         [_start & path] (breadth-first-search start)]
     (count path)))
 
-(defn part-2 [input] nil)
+(defn part-2 [_input] nil)
 
 (let [input (slurp "day-11/input.txt")]
   (println "Part 1:" (part-1 input))

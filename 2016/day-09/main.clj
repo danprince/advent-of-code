@@ -1,4 +1,4 @@
-(ns advent-of-code.day-09)
+(ns day-09)
 
 (def marker-pattern #"(.*?)\((\d+)x(\d+)\)(.*)")
 

@@ -1,5 +1,4 @@
-(ns advent-of-code.day-02
-  (:require [clojure.string :as str]))
+(ns day-02)
 
 (def __ nil)
 

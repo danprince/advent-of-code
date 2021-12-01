@@ -1,4 +1,4 @@
-(ns advent-of-code.day-04
+(ns day-04
   (:require [clojure.string :as str]))
 
 (defn parse-room [s]

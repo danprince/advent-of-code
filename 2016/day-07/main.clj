@@ -1,4 +1,4 @@
-(ns advent-of-code.day-07
+(ns day-07
   (:require [clojure.string :as str]))
 
 (defn parse-ip [ip]

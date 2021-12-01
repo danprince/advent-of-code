@@ -1,4 +1,4 @@
-(ns advent-of-code.day-08
+(ns day-08
   (:require [clojure.string :as str]
             [clojure.set :refer [union]]))
 
@@ -7,10 +7,10 @@
 
 (defn parse-cmd [s]
   (or
-   (if-let [[_ x y] (re-matches pattern-rect s)]
+   (when-let [[_ x y] (re-matches pattern-rect s)]
      [:rect (Integer/parseInt x) (Integer/parseInt y)])
 
-   (if-let [[_ dir idx shift] (re-matches pattern-rotate s)]
+   (when-let [[_ dir idx shift] (re-matches pattern-rotate s)]
      [:rotate (keyword dir) (Integer/parseInt idx) (Integer/parseInt shift)])))
 
 (defn parse-cmds [input]
@@ -38,7 +38,7 @@
            [x y]))))
 
 (defmulti exec
-  (fn [display cmd] (first cmd)))
+  (fn [_display cmd] (first cmd)))
 
 (defmethod exec :rect [display [_ w h]]
   (update display :pixels #(draw-rect % w h)))
@@ -52,6 +52,15 @@
    (case dir
      :column (shift-col pixels idx shift h)
      :row (shift-row pixels idx shift w))))
+
+(defn display->string [{:keys [pixels width height]}]
+  (doseq [y (range height)]
+    (doseq [x (range width)]
+      (if (pixels [x y])
+        (print \#)
+        (print \space)))
+    (print \newline))
+  (flush))
 
 (defn part-1 [input]
   (->> input
