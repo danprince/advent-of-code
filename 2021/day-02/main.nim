@@ -1,9 +1,7 @@
 import std/strutils
 
 proc part1(input: string): int =
-  var
-    x = 0
-    y = 0
+  var x, y = 0
 
   for line in input.splitLines:
     let
@@ -19,10 +17,7 @@ proc part1(input: string): int =
   x * y
 
 proc part2(input: string): int =
-  var
-    x = 0
-    y = 0
-    aim = 0
+  var x, y, aim = 0
 
   for line in input.splitLines:
     let
