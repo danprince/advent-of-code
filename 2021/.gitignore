@@ -1,2 +1,4 @@
 # executables
 day-*/main
+day-*/macro
+day-*/*.js
