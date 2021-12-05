@@ -40,7 +40,7 @@ proc part1(input: string): int =
   var counts = initCountTable[Point]()
 
   for line in lines:
-    if isDiagonal(line):
+    if line.isDiagonal:
       continue
 
     for point in line.points:
