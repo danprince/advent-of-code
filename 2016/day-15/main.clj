@@ -8,7 +8,7 @@
     {:id (Integer/parseInt id)
      :positions (Integer/parseInt n)
      :offset (Integer/parseInt p)}
-    (throw (Exception. (printf "Could not parse disc: \"%s\"" s)))))
+    (throw (Exception. (format "Could not parse disc: \"%s\"" s)))))
 
 (defn parse-discs [input]
   (->> (str/split-lines input) (map parse-disc)))
