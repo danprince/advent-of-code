@@ -19,7 +19,7 @@ proc parseSample(str: string): Sample =
 proc parseSamples(input: string): seq[Sample] =
   input.splitLines.map(parseSample)
 
-proc rewire(sample: Sample): Table[Digit, int] =
+proc decodeOutput(sample: Sample): int =
   let values = sample.values
   var digitsByLen: Table[int, Digit]
 
@@ -60,7 +60,14 @@ proc rewire(sample: Sample): Table[Digit, int] =
     five = eight - topRight - bottomLeft
     six = eight - topRight
 
-  {zero: 0, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9}.toTable
+  let mappings = {zero: '0', one: '1', two: '2', three: '3', four: '4', five: '5', six: '6', seven: '7', eight: '8', nine: '9'}.toTable
+
+  var output = ""
+
+  for digit in sample.outputs:
+    output &= mappings[digit]
+
+  output.parseInt
 
 proc part1(input: string): int =
   for sample in parseSamples(input):
@@ -73,10 +80,7 @@ proc part1(input: string): int =
 
 proc part2(input: string): int =
   for sample in parseSamples(input):
-    let translate = rewire(sample)
-    let outputs = sample.outputs.mapIt(translate[it])
-    let value = outputs.join.parseInt
-    result += value
+    result += decodeOutput(sample)
 
 when isMainModule:
   const example = slurp("example.txt")
