@@ -2,7 +2,6 @@ import std/[strutils, sequtils, tables]
 
 type
   Digit = set[char]
-
   Sample = tuple
     values: seq[Digit]
     outputs: seq[Digit]
@@ -20,7 +19,7 @@ proc parseSamples(input: string): seq[Sample] =
   input.splitLines.map(parseSample)
 
 proc decodeOutput(sample: Sample): int =
-  let values = sample.values
+  let (values, outputs) = sample
   var digitsByLen: Table[int, Digit]
 
   for value in values:
@@ -55,6 +54,7 @@ proc decodeOutput(sample: Sample): int =
     middle = two - top - topRight - bottom - bottomLeft
     topLeft = four - topRight - middle - bottomRight
 
+  let
     zero = eight - middle
     three = eight - topLeft - bottomLeft
     five = eight - topRight - bottomLeft
@@ -62,12 +62,7 @@ proc decodeOutput(sample: Sample): int =
 
   let mappings = {zero: '0', one: '1', two: '2', three: '3', four: '4', five: '5', six: '6', seven: '7', eight: '8', nine: '9'}.toTable
 
-  var output = ""
-
-  for digit in sample.outputs:
-    output &= mappings[digit]
-
-  output.parseInt
+  outputs.mapIt(mappings[it]).join.parseInt
 
 proc part1(input: string): int =
   for sample in parseSamples(input):
