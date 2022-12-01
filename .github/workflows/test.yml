@@ -1,7 +1,8 @@
 name: Test
 on: [push,pull_request]
 jobs:
-  2022:
+  zig_2022:
+    name: Zig 2022
     runs-on: ubuntu-latest
     defaults:
       run:
