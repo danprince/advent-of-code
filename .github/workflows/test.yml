@@ -1,0 +1,12 @@
+name: Test
+on: [push,pull_request]
+jobs:
+  2022:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: 2022
+    steps:
+      - uses: actions/checkout@v2
+      - uses: goto-bus-stop/setup-zig@v2 
+      - run: zig test **/*.zig
