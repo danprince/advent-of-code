@@ -2,7 +2,6 @@ const std = @import("std");
 const testing = std.testing;
 const print = std.debug.print;
 const parseInt = std.fmt.parseInt;
-const puzzle_input = @embedFile("input.txt");
 
 fn part1(input: []const u8) !u32 {
     var lines = std.mem.split(u8, input, "\n");
@@ -45,31 +44,16 @@ fn part2(input: []const u8) !u32 {
 }
 
 pub fn main() !void {
-    print("Part 1: {d}\n", .{try part1(puzzle_input)});
-    print("Part 2: {d}\n", .{try part2(puzzle_input)});
+    const input = @embedFile("input.txt");
+    print("Part 1: {d}\n", .{try part1(input)});
+    print("Part 2: {d}\n", .{try part2(input)});
 }
 
-test "examples" {
-    const example =
-        \\1000
-        \\2000
-        \\3000
-        \\
-        \\4000
-        \\
-        \\5000
-        \\6000
-        \\
-        \\7000
-        \\8000
-        \\9000
-        \\
-        \\10000
-        \\
-    ;
-
+test {
+    const input = @embedFile("input.txt");
+    const example = @embedFile("example.txt");
     try testing.expectEqual(try part1(example), 24000);
     try testing.expectEqual(try part2(example), 45000);
-    try testing.expectEqual(try part1(puzzle_input), 71124);
-    try testing.expectEqual(try part2(puzzle_input), 204639);
+    try testing.expectEqual(try part1(input), 71124);
+    try testing.expectEqual(try part2(input), 204639);
 }
