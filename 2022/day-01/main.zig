@@ -49,11 +49,14 @@ pub fn main() !void {
     print("Part 2: {d}\n", .{try part2(input)});
 }
 
-test {
-    const input = @embedFile("input.txt");
+test "example" {
     const example = @embedFile("example.txt");
     try testing.expectEqual(try part1(example), 24000);
     try testing.expectEqual(try part2(example), 45000);
+}
+
+test "input" {
+    const input = @embedFile("input.txt");
     try testing.expectEqual(try part1(input), 71124);
     try testing.expectEqual(try part2(input), 204639);
 }
