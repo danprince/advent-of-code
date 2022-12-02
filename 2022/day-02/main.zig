@@ -68,7 +68,7 @@ const Outcome = enum {
     }
 };
 
-fn part1(input: []const u8) !u32 {
+fn part1(input: []const u8) u32 {
     var lines = std.mem.tokenize(u8, input, "\n");
     var score: u32 = 0;
 
@@ -82,7 +82,7 @@ fn part1(input: []const u8) !u32 {
     return score;
 }
 
-fn part2(input: []const u8) !u32 {
+fn part2(input: []const u8) u32 {
     var lines = std.mem.tokenize(u8, input, "\n");
     var score: u32 = 0;
 
@@ -100,20 +100,20 @@ fn part2(input: []const u8) !u32 {
     return score;
 }
 
-pub fn main() !void {
+pub fn main() void {
     const input = @embedFile("input.txt");
-    print("Part 1: {d}\n", .{try part1(input)});
-    print("Part 2: {d}\n", .{try part2(input)});
+    print("Part 1: {d}\n", .{part1(input)});
+    print("Part 2: {d}\n", .{part2(input)});
 }
 
 test "examples" {
     const example = @embedFile("example.txt");
-    try testing.expectEqual(try part1(example), 15);
-    try testing.expectEqual(try part2(example), 12);
+    try testing.expectEqual(part1(example), 15);
+    try testing.expectEqual(part2(example), 12);
 }
 
 test "inputs" {
     const input = @embedFile("input.txt");
-    try testing.expectEqual(try part1(input), 12772);
-    try testing.expectEqual(try part2(input), 11618);
+    try testing.expectEqual(part1(input), 12772);
+    try testing.expectEqual(part2(input), 11618);
 }
