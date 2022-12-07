@@ -9,7 +9,7 @@ test {
   _ = @import("day-04/main.zig");
   _ = @import("day-05/main.zig");
   _ = @import("day-06/main.zig");
-  //_ = @import("./day-07/main.zig");
+  _ = @import("day-07/main.zig");
   //_ = @import("./day-010/main.zig");
   //_ = @import("./day-011/main.zig");
   //_ = @import("./day-012/main.zig");
