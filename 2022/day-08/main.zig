@@ -34,7 +34,7 @@ fn part1(input: []const u8) usize {
         var x0 = x;
         while (x0 > 0) {
             x0 -= 1;
-            if (trees.at(x0 - 1, y) >= tree) {
+            if (trees.at(x0, y) >= tree) {
                 blocked += 1;
                 break;
             }
