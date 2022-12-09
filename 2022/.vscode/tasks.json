@@ -5,18 +5,34 @@
 			"label": "Run",
 			"type": "shell",
 			"command": "zig run ${file}",
+			"group": "build",
 			"problemMatcher": [],
-			"group": {
-				"kind": "build",
-				"isDefault": true
+			"presentation": {
+				"echo": false,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": false,
+				"clear": true
 			}
 		},
 		{
 			"label": "Test",
 			"type": "shell",
 			"command": "zig test ${file}",
+			"presentation": {
+				"echo": false,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": false,
+				"clear": true
+			},
 			"problemMatcher": [],
-			"group": "test"
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
 		}
 	]
 }
