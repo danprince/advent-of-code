@@ -170,5 +170,5 @@ test "inputs" {
     const input = @embedFile("input.txt");
     // TODO: Not sure when this regression happened. Will figure it out after!
     //try testing.expectEqual(part1(input, std.testing.allocator), 88208);
-    try testing.expectEqual(part2(input, std.testing.allocator), 2713310158);
+    try testing.expectEqual(part2(input, std.testing.allocator), 21115867968);
 }
