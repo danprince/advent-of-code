@@ -14,7 +14,7 @@ test {
     _ = @import("day-09/main.zig");
     _ = @import("day-10/main.zig");
     _ = @import("day-11/main.zig");
-    //_ = @import("day-12/main.zig");
+    _ = @import("day-12/main.zig");
     //_ = @import("day-13/main.zig");
     //_ = @import("day-14/main.zig");
     //_ = @import("day-15/main.zig");
