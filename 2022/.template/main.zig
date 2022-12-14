@@ -18,12 +18,12 @@ fn part2(input: []const u8, allocator: Allocator) !usize {
 
 test "examples" {
     const example = @embedFile("example.txt");
-    try testing.expectEqual(part1(example, std.testing.allocator), 0);
-    try testing.expectEqual(part2(example, std.testing.allocator), 0);
+    try testing.expectEqual(part1(example, testing.allocator), 0);
+    try testing.expectEqual(part2(example, testing.allocator), 0);
 }
 
 test "inputs" {
     //const input = @embedFile("input.txt");
-    //try testing.expectEqual(part1(input, std.testing.allocator), 0);
-    //try testing.expectEqual(part2(input, std.testing.allocator), 0);
+    //try testing.expectEqual(part1(input, testing.allocator), 0);
+    //try testing.expectEqual(part2(input, testing.allocator), 0);
 }
