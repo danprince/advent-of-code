@@ -20,6 +20,8 @@ test {
     _ = @import("day-15/main.zig");
     //_ = @import("day-16/main.zig");
     //_ = @import("day-17/main.zig");
+    _ = @import("day-18/main.zig");
+    //_ = @import("day-19/main.zig");
     //_ = @import("day-20/main.zig");
     //_ = @import("day-21/main.zig");
     //_ = @import("day-22/main.zig");
