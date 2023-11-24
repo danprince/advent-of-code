@@ -1,0 +1,10 @@
+main.zig:251:9: error: expected type 'void', found '@typeInfo(@typeInfo(@TypeOf(main.part2)).Fn.return_type.?).ErrorUnion.error_set'
+    _ = try part2(example);
+        ^~~~~~~~~~~~~~~~~~
+main.zig:249:15: note: function cannot return an error
+pub fn main() void {
+              ^~~~
+referenced by:
+    comptime_0: /opt/homebrew/Cellar/zig/HEAD-f68bfe2/lib/zig/std/start.zig:59:50
+    remaining reference traces hidden; use '-freference-trace' to see all reference traces
+
