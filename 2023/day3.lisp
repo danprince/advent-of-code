@@ -88,6 +88,6 @@
 (assert (equal (part-1 *example*) 4361))
 (assert (equal (part-2 *example*) 467835))
 
-(defparameter *input* (uiop:read-file-string "2023/day3.txt"))
+(defparameter *input* (uiop:read-file-string "2023/day3.input"))
 (format t "Part 1: ~A~%" (part-1 *input*))
 (format t "Part 2: ~A~%" (part-2 *input*))

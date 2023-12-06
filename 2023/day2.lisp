@@ -52,6 +52,6 @@ Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green")
 (assert (equal (part-1 *example*) 8))
 (assert (equal (part-2 *example*) 2286))
 
-(let ((input (string-trim '(#\newline) (uiop:read-file-string "2023/day2.txt"))))
+(let ((input (string-trim '(#\newline) (uiop:read-file-string "2023/day2.input"))))
   (print (part-1 input))
   (print (part-2 input)))

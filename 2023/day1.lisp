@@ -51,6 +51,6 @@
 (assert (equal (get-artistic-calibration-value "7pqrstsixteen") 76))
 (assert (equal (get-artistic-calibration-value "eightwo") 82))
 
-(let ((input (string-trim '(#\newline) (uiop:read-file-string "2023/day1.txt"))))
+(let ((input (string-trim '(#\newline) (uiop:read-file-string "2023/day1.input"))))
   (print (part-1 input))
   (print (part-2 input)))
