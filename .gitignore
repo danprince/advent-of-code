@@ -13,3 +13,6 @@
 
 # Julia allocation dumps
 *.mem
+
+# Vscode cache for Common Lisp extension
+.vscode/alive
