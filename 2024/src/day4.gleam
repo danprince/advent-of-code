@@ -39,7 +39,7 @@ pub fn main() {
 
   let word = "MAS"
   let assert 9 = part2(example, word)
-  let assert 0 = part2(input, word)
+  let assert 1969 = part2(input, word)
 }
 
 fn part1(input: String, word: String) -> Int {
